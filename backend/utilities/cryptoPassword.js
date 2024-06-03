@@ -6,8 +6,9 @@ const hash = async (password) => {
     return {hashedPassword, salt};
 }
 
-const compare = () => {
-
+const compare = async (alreadyHashedPassword, salt, password) => {
+    const hashedPassword = await crypto.pbkdf2Sync(password, salt, 100000, 64, "sha256").toString("hex");
+    return hashedPassword === alreadyHashedPassword;
 }
 
 module.exports = {

@@ -18,6 +18,27 @@ const userAuth = (req, res, next) => {
     next();
 }
 
+userRouter.post("/signin", async (req, res) => {
+    console.log(req.isAuthenticated);
+    const {username, email, password} = req.body;
+    //Search db for user
+    try{
+        const findUser = await User.findOne({username, email});
+        if(!findUser){
+            res.json({message: "This account does not exist."});
+        } else if(cryptoPassword.compare(findUser.password, findUser.salt, password)) {
+            const jwtToken = authJWT.generateToken({username, email}, process.env.SECRET_ACCESS_TOKEN, "2m");
+            const jwtRefreshToken = authJWT.generateToken({username, email}, process.env.SECRET_REFRESH_TOKEN, "10m");
+            req.isAuthenticated = true;
+            res.cookie("userAuth", jwtToken, {httpOnly: true});
+            res.cookie("userAuthRefresh", jwtRefreshToken, {httpOnly: true});
+            res.json({username: findUser.username, email: findUser.email});
+        }
+    } catch (error) {
+        console.log(error);
+    }
+});
+
 userRouter.post("/signup", async (req, res) => {
     const {username, email, password} = req.body;
     const hashData = await cryptoPassword.hash(password);
@@ -41,15 +62,12 @@ userRouter.post("/signup", async (req, res) => {
         //Auth upon account creation
         const jwtToken = authJWT.generateToken({username, email}, process.env.SECRET_ACCESS_TOKEN, "2m");
         const jwtRefreshToken = authJWT.generateToken({username, email}, process.env.SECRET_REFRESH_TOKEN, "10m");
+        req.isAuthenticated = true;
         res.cookie("userAuth", jwtToken, {httpOnly: true});
         res.cookie("userAuthRefresh", jwtRefreshToken, {httpOnly: true});
         res.json({
             username,
             email,
-            password: hashedPassword,
-            salt,
-            jwtToken,
-            jwtRefreshToken
         });
     } catch (error) {
         console.log(error);
