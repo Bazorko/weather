@@ -19,7 +19,6 @@ const userAuth = (req, res, next) => {
 }
 
 userRouter.post("/signin", async (req, res) => {
-    console.log(req.isAuthenticated);
     const {username, email, password} = req.body;
     //Search db for user
     try{
@@ -27,11 +26,17 @@ userRouter.post("/signin", async (req, res) => {
         if(!findUser){
             res.json({message: "This account does not exist."});
         } else if(cryptoPassword.compare(findUser.password, findUser.salt, password)) {
-            const jwtToken = authJWT.generateToken({username, email}, process.env.SECRET_ACCESS_TOKEN, "2m");
-            const jwtRefreshToken = authJWT.generateToken({username, email}, process.env.SECRET_REFRESH_TOKEN, "10m");
-            req.isAuthenticated = true;
+            const jwtToken = authJWT.generateToken({username, email}, process.env.SECRET_ACCESS_TOKEN, "15m");
+            let jwtRefresh = undefined;
+            if(authJWT.verifyRefreshToken(findUser.jwtRefresh)){
+                jwtRefresh = authJWT.generateToken({username, email}, process.env.SECRET_REFRESH_TOKEN, "48h");
+                findUser.jwtRefresh = jwtRefresh;
+                findUser.save();
+            }
+            jwtRefresh = findUser.jwtRefresh;
             res.cookie("userAuth", jwtToken, {httpOnly: true});
-            res.cookie("userAuthRefresh", jwtRefreshToken, {httpOnly: true});
+            res.cookie("userAuthRefresh", jwtRefresh, {httpOnly: true});
+            req.isAuth = true;
             res.json({username: findUser.username, email: findUser.email});
         }
     } catch (error) {
@@ -52,19 +57,20 @@ userRouter.post("/signup", async (req, res) => {
             return res.json({message: "Username or email already taken."});
         }
         //Create user if not found.
+        const jwtToken = authJWT.generateToken({username, email}, process.env.SECRET_ACCESS_TOKEN, "15m");
+        const jwtRefresh = authJWT.generateToken({username, email}, process.env.SECRET_REFRESH_TOKEN, "48h");
         const newUser = await User.create({
             username,
             email,
             password: hashedPassword,
-            salt
+            salt,
+            jwtRefresh
         });
         newUser.save();
         //Auth upon account creation
-        const jwtToken = authJWT.generateToken({username, email}, process.env.SECRET_ACCESS_TOKEN, "2m");
-        const jwtRefreshToken = authJWT.generateToken({username, email}, process.env.SECRET_REFRESH_TOKEN, "10m");
-        req.isAuthenticated = true;
+        req.isAuth = true;
         res.cookie("userAuth", jwtToken, {httpOnly: true});
-        res.cookie("userAuthRefresh", jwtRefreshToken, {httpOnly: true});
+        res.cookie("userAuthRefresh", jwtRefresh, {httpOnly: true});
         res.json({
             username,
             email,
@@ -83,8 +89,9 @@ userRouter.post("/reauth", (req, res) => {
         if(error){
             return res.json({message: "Forbidden"});
         }
-        const jwtToken = authJWT.generateToken({username: user.username, email: user.email}, process.env.SECRET_ACCESS_TOKEN, "2m");
-        res.json({jwtToken});
+        const jwtToken = authJWT.generateToken({username: user.username, email: user.email}, process.env.SECRET_ACCESS_TOKEN, "15m");
+        res.clearCookie("userAuth");
+        res.cookie("userAuth", jwtToken, {httpOnly: true});
     });
 });
 

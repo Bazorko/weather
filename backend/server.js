@@ -7,6 +7,12 @@ const app = express();
 //Settings
 app.use(express.json());
 app.use(cookieParser());
+app.use((req, res, next) => {
+    if(!req.hasOwnProperty("isAuth")){
+        req.isAuth = false;
+    }
+    next();
+});
 
 //Routes
 app.use("/user", userRouter);

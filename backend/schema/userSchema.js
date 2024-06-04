@@ -18,6 +18,9 @@ const userSchema = mongoose.Schema({
     salt: {
         type: String,
         required: true
+    },
+    jwtRefresh: {
+        type: String
     }
 });
 module.exports = mongoose.model("User", userSchema);
