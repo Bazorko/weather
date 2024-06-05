@@ -5,7 +5,7 @@ const generateToken = (user, token, ttl) => {
 const verifyToken = (req, res, next, token) => {
     return jwt.verify(token, process.env.SECRET_ACCESS_TOKEN, (err, user) => {
         if(err) {
-            return res.json({message: "Unauthorized"}).sendStatus(403);
+            console.log(err);
         }
         req.user = user;
         next();

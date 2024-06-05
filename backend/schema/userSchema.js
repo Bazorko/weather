@@ -21,6 +21,9 @@ const userSchema = mongoose.Schema({
     },
     jwtRefresh: {
         type: String
-    }
+    },
+    locations: [
+        String
+    ]
 });
 module.exports = mongoose.model("User", userSchema);

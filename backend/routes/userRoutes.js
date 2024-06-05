@@ -15,7 +15,6 @@ const userAuth = (req, res, next) => {
         return res.json({message: "Unauthorized"});
     }
     authJWT.verifyToken(req, res, next, token);
-    next();
 }
 
 userRouter.post("/signin", async (req, res) => {
@@ -28,6 +27,7 @@ userRouter.post("/signin", async (req, res) => {
         } else if(cryptoPassword.compare(findUser.password, findUser.salt, password)) {
             const jwtToken = authJWT.generateToken({username, email}, process.env.SECRET_ACCESS_TOKEN, "15m");
             let jwtRefresh = undefined;
+            //Check to see if refresh token is expired.
             if(authJWT.verifyRefreshToken(findUser.jwtRefresh)){
                 jwtRefresh = authJWT.generateToken({username, email}, process.env.SECRET_REFRESH_TOKEN, "48h");
                 findUser.jwtRefresh = jwtRefresh;
@@ -64,7 +64,12 @@ userRouter.post("/signup", async (req, res) => {
             email,
             password: hashedPassword,
             salt,
-            jwtRefresh
+            jwtRefresh,
+            locations: [
+                "test 1",
+                "test 2",
+                "test 3"
+            ],
         });
         newUser.save();
         //Auth upon account creation
@@ -90,13 +95,18 @@ userRouter.post("/reauth", (req, res) => {
             return res.json({message: "Forbidden"});
         }
         const jwtToken = authJWT.generateToken({username: user.username, email: user.email}, process.env.SECRET_ACCESS_TOKEN, "15m");
+        console.log(jwtToken);
         res.clearCookie("userAuth");
         res.cookie("userAuth", jwtToken, {httpOnly: true});
+        res.json(jwtToken);
     });
 });
 
-userRouter.get("/posts", userAuth, (req, res) => {
-    res.json();
+userRouter.get("/locations", userAuth, async (req, res) => {
+    const {username, email} = req.body;
+    const findUser = await User.findOne({username, email});
+    console.log(findUser.locations);
+    res.json(findUser.locations);
 });
 
 module.exports = userRouter;
