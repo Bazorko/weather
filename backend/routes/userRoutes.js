@@ -12,7 +12,7 @@ const userAuth = (req, res, next) => {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
     if(token == null){
-        return res.json({message: "Unauthorized"});
+        return res.json({message: "Unauthorized uco"});
     }
     authJWT.verifyToken(req, res, next, token);
 }
@@ -103,10 +103,25 @@ userRouter.post("/reauth", (req, res) => {
 });
 
 userRouter.get("/locations", userAuth, async (req, res) => {
-    const {username, email} = req.body;
-    const findUser = await User.findOne({username, email});
-    console.log(findUser.locations);
-    res.json(findUser.locations);
+    try{
+        const {username, email} = req.body;
+        const findUser = await User.findOne({username, email});
+        res.json(findUser.locations);
+    } catch(error){
+        console.log(error);
+    }
+});
+userRouter.post("/locations", userAuth, async (req, res) => {
+    try{
+        const {username, email} = req.body;
+        const findUser = await User.findOne({username, email});
+        const locations = findUser.locations;
+        locations.push("uco, where uco");
+        await findUser.save();
+        res.json({message: "saved"});
+    } catch (error){
+        console.log(error);
+    }
 });
 
 module.exports = userRouter;
