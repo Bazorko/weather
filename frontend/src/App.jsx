@@ -1,6 +1,8 @@
+import Home from "./pages/Home.jsx";
 const App = () => {
   return(<>
-      <p>Hello World</p>
-  </>);
+    <Home />
+  </>
+  );
 }
 export default App;

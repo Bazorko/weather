@@ -17,7 +17,15 @@ const userAuth = (req, res, next) => {
     authJWT.verifyToken(req, res, next, token);
 }
 
-userRouter.post("/signin", async (req, res) => {
+ //If user has auth themselves, then you dont want them to visit pages where they might think they have to do it again.
+ const isNotAuth = (req, res, next) => {
+    if(req.isAuth()){
+        return res.json({message: "redirect to account / dashboard pg"});
+    }
+    next();
+ }
+
+userRouter.post("/signin", isNotAuth, async (req, res) => {
     const {username, email, password} = req.body;
     //Search db for user
     try{
@@ -44,7 +52,7 @@ userRouter.post("/signin", async (req, res) => {
     }
 });
 
-userRouter.post("/signup", async (req, res) => {
+userRouter.post("/signup", isNotAuth, async (req, res) => {
     const {username, email, password} = req.body;
     const hashData = await cryptoPassword.hash(password);
     const hashedPassword = hashData.hashedPassword;
@@ -85,7 +93,7 @@ userRouter.post("/signup", async (req, res) => {
     }
 });
 
-userRouter.post("/reauth", (req, res) => {
+userRouter.post("/reauth", isNotAuth, (req, res) => {
     const refreshToken = req.cookies.userAuthRefresh;
     if(refreshToken == null){
         return res.json({message: "Unauthorized."});
@@ -102,7 +110,7 @@ userRouter.post("/reauth", (req, res) => {
     });
 });
 
-userRouter.get("/locations", userAuth, async (req, res) => {
+userRouter.get("/locations", isNotAuth, userAuth, async (req, res) => {
     try{
         const {username, email} = req.body;
         const findUser = await User.findOne({username, email});
@@ -111,7 +119,7 @@ userRouter.get("/locations", userAuth, async (req, res) => {
         console.log(error);
     }
 });
-userRouter.post("/locations", userAuth, async (req, res) => {
+userRouter.post("/locations", isNotAuth, userAuth, async (req, res) => {
     try{
         const {username, email} = req.body;
         const findUser = await User.findOne({username, email});

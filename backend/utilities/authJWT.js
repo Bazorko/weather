@@ -6,6 +6,7 @@ const verifyToken = (req, res, next, token) => {
     return jwt.verify(token, process.env.SECRET_ACCESS_TOKEN, (err, user) => {
         if(err) {
             console.log(err);
+            res.json({message: "redirect to login"});
         }
         req.user = user;
         next();
