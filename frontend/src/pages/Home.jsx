@@ -1,9 +1,19 @@
+import { useState } from "react";
 import Container from "../utils/Container.jsx";
+import Account from "../components/account/Account.jsx";
 const Home = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const openModal = () => {
+        setIsModalOpen(true);
+    }
+    const closeModal = () => {
+        setIsModalOpen(false);
+    }
     return(<>
         <main className="h-screen bg-blue-500">
             <Container>
-                <section className="h-screen flex flex-col gap-y-6 justify-center items-center">
+                {isModalOpen ? <Account isModalOpen={isModalOpen} handleClick={closeModal}/> : 
+                <article className="h-screen flex flex-col gap-y-6 justify-center items-center">
                     <section>
                         <h1 className="text-slate-50 text-5xl">Weather</h1>
                     </section>
@@ -14,9 +24,9 @@ const Home = () => {
                         </form>
                     </section>
                     <section>
-                        <p className="text-slate-50 underline cursor-pointer">Log In or Sign Up</p>
+                        <p onClick={openModal} className="text-slate-50 underline cursor-pointer">Log In or Sign Up</p>
                     </section>
-                </section>
+                </article>}
             </Container>
         </main>
     </>);
