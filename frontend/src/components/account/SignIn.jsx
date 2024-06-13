@@ -9,7 +9,9 @@ const SignIn = (props) => {
                 <input type="password" name="password" className="py-1.5 pl-1.5 border-zinc-600 border-2 rounded-lg" placeholder="Enter your password"/>
                 <button type="submit" className="py-2 border-2 rounded-lg bg-blue-500 text-slate-50">Sign In</button>
             </form>
-            <p onClick={props.handleClick} className="p-5 text-center">Don't have an account?</p>
+        </section>
+        <section className="p-6 cursor-pointer">
+            <p onClick={props.handleClick} className="text-center">Don't have an account?</p>
         </section>
     </>);
 }

@@ -11,16 +11,14 @@ const Account = (props) => {
         setIsSignInOpen(false);
     }
     return(<>
-        <div onClick={props.handleClick}>
-            <Modal>
-                <section className="flex flex-col justify-center items-center">
-                    <section className="w-full text-right pb-6">
-                        <p onClick={props.handleClick} className="text-2xl">&times;</p>
-                    </section>
-                    {isSignInOpen ? <SignIn handleClick={closeSignIn}/> : <SignUp handleClick={openSignIn}/>}
+        <Modal handleClick={props.handleClick}>
+            <section className="flex flex-col justify-center items-center">
+                <section className="w-full pb-6 flex justify-end">
+                    <p onClick={props.handleClick} className="text-2xl">&times;</p>
                 </section>
-            </Modal>
-        </div>
+                {isSignInOpen ? <SignIn handleClick={closeSignIn}/> : <SignUp handleClick={openSignIn}/>}
+            </section>
+        </Modal>
     </>);
 }
 export default Account;
