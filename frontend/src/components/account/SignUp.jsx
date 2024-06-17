@@ -11,7 +11,7 @@ const SignUp = (props) => {
                 </div>
                 <input type="email" name="email" className="py-1.5 pl-1.5 border-zinc-600 border-2 rounded-lg" placeholder="Enter your email address"/>
                 <input type="password" name="password" className="py-1.5 pl-1.5 border-zinc-600 border-2 rounded-lg" placeholder="Enter your password"/>
-                <button type="submit" className="py-2 border-2 rounded-lg bg-blue-500 text-slate-50">Sign In</button>
+                <button type="submit" className="py-2 border-2 rounded-lg bg-blue-500 text-slate-50">Sign Up</button>
             </form>
         </section>
         <section className="p-6 cursor-pointer">
