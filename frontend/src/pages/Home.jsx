@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Container from "../utils/Container.jsx";
 import AccountModal from "../components/account/AccountModal.jsx";
-//import locations from "../utils/locations/locations.jsx";
 const Home = () => {
     const [inputValue, setInputValue] = useState("");
+    const stateAbbr = "NY";
+    const stateFull = "New York";
     const [isModalOpen, setIsModalOpen] = useState(false);
     const openModal = () => {
         setIsModalOpen(true);
@@ -15,12 +16,6 @@ const Home = () => {
     const handleInputChange = (event) => {
         setInputValue(event.target.value);
     }
-    /*for(let i = 0; i < locations.length; i++){
-        if(locations[i].cities.find(str => str.toLowerCase() === inputValue.toLowerCase())){
-            console.log(locations[i].stateFull);
-            console.log(inputValue);
-        }
-    }*/
     return(<>
         <section className="h-screen bg-blue-500">
             <Container>
@@ -30,9 +25,9 @@ const Home = () => {
                         <h1 className="text-slate-50 text-5xl">Weather</h1>
                     </section>
                     <section className="w-full sm:w-10/12">
-                        <form action="" className="flex flex-col md:flex-row gap-y-2 md:gap-x-4 md:justify-center">
+                        <form className="flex flex-col md:flex-row gap-y-2 md:gap-x-4 md:justify-center">
                             <input type="text" placeholder="Enter a city" name="city" value={inputValue} onChange={handleInputChange} className="py-2 pl-1 border-2 rounded-lg border-slate-50 w-full md:w-96"/>
-                            <Link className="md:w-40 p-1 py-2 border-2 border-slate-50 text-slate-50 rounded-lg text-center" to={`../weather/${inputValue}`} state={{stateAbbr: "NY", stateFull: "New York"}}>Search</Link>
+                            <Link className="md:w-40 p-1 py-2 border-2 border-slate-50 text-slate-50 rounded-lg text-center" to={`../weather/${inputValue}/${stateAbbr}/${stateFull}`} type="submit">Search</Link>
                         </form>
                     </section>
                     <section>

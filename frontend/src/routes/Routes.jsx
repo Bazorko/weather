@@ -6,7 +6,7 @@ const routes = [
         element: <App />,
     },
     {
-        path: "weather/:city",
+        path: "weather/:city/:stateAbbr/:stateFull",
         element: <Weather />,
     },
 ];
