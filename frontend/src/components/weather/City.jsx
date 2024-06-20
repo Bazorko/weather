@@ -3,7 +3,7 @@ import { useState } from "react";
 const City = (props) => {
     const [data, setData] = useState(null);
 
-    const { city, stateAbbr, stateFull } = props.location;
+    const { city, stateAbbr, stateFull } = props;
 
     const getWeather = async () => {
         const {data, loading, error} = await useFetchWeather(city, stateAbbr);
@@ -12,7 +12,7 @@ const City = (props) => {
     getWeather();
 
         return(<>
-            {data &&<section className="flex flex-col items-center mt-16">
+            {data &&<section className="flex flex-col items-center mt-40">
                 <section className="flex flex-col items-center">
                     <h1 className="text-3xl sm:text-4xl md:text-5xl pt-3 pb-1.5">{Math.round(data.daily[0].temp.day)}&deg; F</h1>
                     <section className="flex flex-row text-xs gap-x-4">

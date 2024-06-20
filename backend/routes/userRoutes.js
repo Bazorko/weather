@@ -26,18 +26,18 @@ const userAuth = (req, res, next) => {
  }
 
 userRouter.post("/signin", isNotAuth, async (req, res) => {
-    const {username, email, password} = req.body;
+    const {email, password} = req.body;
     //Search db for user
     try{
-        const findUser = await User.findOne({username, email});
+        const findUser = await User.findOne({email});
         if(!findUser){
             res.json({message: "This account does not exist."});
         } else if(cryptoPassword.compare(findUser.password, findUser.salt, password)) {
-            const jwtToken = authJWT.generateToken({username, email}, process.env.SECRET_ACCESS_TOKEN, "15m");
+            const jwtToken = authJWT.generateToken({email}, process.env.SECRET_ACCESS_TOKEN, "15m");
             let jwtRefresh = undefined;
             //Check to see if refresh token is expired.
             if(authJWT.verifyRefreshToken(findUser.jwtRefresh)){
-                jwtRefresh = authJWT.generateToken({username, email}, process.env.SECRET_REFRESH_TOKEN, "48h");
+                jwtRefresh = authJWT.generateToken({email}, process.env.SECRET_REFRESH_TOKEN, "48h");
                 findUser.jwtRefresh = jwtRefresh;
                 findUser.save();
             }

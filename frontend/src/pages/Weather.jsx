@@ -1,19 +1,12 @@
 import Container from "../utils/Container.jsx";
 import AccountModal from "../components/account/AccountModal.jsx";
+import SearchForCity from "../components/weather/SearchForCity.jsx";
 import City from "../components/weather/City.jsx";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 const Weather = () => {
-    const [inputValue, setInputValue] = useState("");
-
     let { city, stateAbbr, stateFull } = useParams();
     city = city.charAt(0).toUpperCase() + city.slice(1).toLowerCase();
-
-    const locationObj = {
-        city,
-        stateAbbr,
-        stateFull
-    }
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const openModal = () => {
@@ -21,9 +14,6 @@ const Weather = () => {
     }
     const closeModal = () => {
         setIsModalOpen(false);
-    }
-    const handleInputChange = (event) => {
-        setInputValue(event.target.value);
     }
     return(<>
         {isModalOpen ? <AccountModal isModalOpen={isModalOpen} handleClick={closeModal}/> : null}
@@ -39,11 +29,12 @@ const Weather = () => {
                 </section>
             </nav>
             <Container>
-                <form action="" className="flex flex-col md:flex-row gap-y-2 md:gap-x-4 md:justify-center mt-8">
-                    <input type="text" placeholder="Enter a city" name="city" value={inputValue} onChange={handleInputChange} className="py-2 pl-1 border-2 rounded-lg border-neutral-600 w-full md:w-96"/>
-                    <Link className="md:w-40 p-1 py-2 bg-blue-500 border-2 border-blue-500 text-slate-50 rounded-lg text-center" to={`../../weather/${inputValue}/${locationObj.stateAbbr}/${locationObj.stateFull}`}>Search</Link>
-                </form>
-                <City location={locationObj}/>
+                <City city={city} stateAbbr={stateAbbr} stateFull={stateFull}/>
+                <section className="flex justify-center mt-10">
+                    <Link to="/">
+                        <p className="cursor-pointer hover:underline">&larr; Back Home</p>
+                    </Link>
+                </section>
             </Container>
         </section>
     </>);
