@@ -17,7 +17,7 @@ app.use((req, res, next) => {
 });
 
 //Routes
-app.get("/weather/:city/:stateAbbr", cors({origin: "*", method: ["GET"]}), (req, res) => {
+app.get("/weather/:city/:stateAbbr", cors({origin: "http://localhost:5173", method: ["GET"]}), (req, res) => {
     const { city, stateAbbr } = req.params;
     console.log(req.params);
     const fetchWeather = async () => {
@@ -40,6 +40,6 @@ app.get("/weather/:city/:stateAbbr", cors({origin: "*", method: ["GET"]}), (req,
     }
     fetchWeather();
 });
-app.use("/user", userRouter);
+app.use("/user", cors({origin: "http://localhost:5173", credentials: true, method: ["GET", "POST"]}), userRouter);
 
 app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));

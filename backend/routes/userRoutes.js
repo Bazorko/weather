@@ -19,7 +19,7 @@ const userAuth = (req, res, next) => {
 
  //If user has auth themselves, then you dont want them to visit pages where they might think they have to do it again.
  const isNotAuth = (req, res, next) => {
-    if(req.isAuth()){
+    if(req.isAuth){
         return res.json({message: "redirect to account / dashboard pg"});
     }
     next();
