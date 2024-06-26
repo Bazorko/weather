@@ -1,13 +1,9 @@
 import Container from "../utils/Container.jsx";
 import AccountModal from "../components/account/AccountModal.jsx";
-import SearchForCity from "../components/weather/SearchForCity.jsx";
 import City from "../components/weather/City.jsx";
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 const Weather = () => {
-    let { city, stateAbbr, stateFull } = useParams();
-    city = city.charAt(0).toUpperCase() + city.slice(1).toLowerCase();
-
     const [isModalOpen, setIsModalOpen] = useState(false);
     const openModal = () => {
         setIsModalOpen(true);
@@ -16,8 +12,7 @@ const Weather = () => {
         setIsModalOpen(false);
     }
     return(<>
-        {isModalOpen ? <AccountModal isModalOpen={isModalOpen} handleClick={closeModal}/> : null}
-        <section className="h-screen bg-slate-50">
+        {isModalOpen ? <AccountModal handleClick={closeModal}/> : <section className="h-screen bg-slate-50">
             <nav className="w-full bg-blue-500 p-6 flex flex-row content-between">
                 <section className="flex-1 self-center">
                     <Link to="/">
@@ -29,14 +24,14 @@ const Weather = () => {
                 </section>
             </nav>
             <Container>
-                <City city={city} stateAbbr={stateAbbr} stateFull={stateFull}/>
+                <City />
                 <section className="flex justify-center mt-10">
                     <Link to="/">
                         <p className="cursor-pointer hover:underline">&larr; Back Home</p>
                     </Link>
                 </section>
             </Container>
-        </section>
+        </section>}
     </>);
 }
 export default Weather;

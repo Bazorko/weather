@@ -6,9 +6,15 @@ export const useFetchWeather = (city, stateAbbr) => {
     const url = `http://localhost:3000/weather/${city}/${stateAbbr}`;
     useEffect(() => {
         const testFetch = async () => {
-            const response = await fetch(url);
-            const json = await response.json();
-            setData(json);
+            try {
+                const response = await fetch(url);
+                const json = await response.json();
+                setData(json);
+                setLoading(false);
+            } catch(error) {
+                setLoading(false);
+                setError(error);
+            }
         }
         testFetch();
     }, [url]);

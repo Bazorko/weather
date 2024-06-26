@@ -13,7 +13,7 @@ const Home = () => {
     return(<>
         <section className="h-screen bg-blue-500">
             <Container>
-                {isModalOpen ? <AccountModal isModalOpen={isModalOpen} handleClick={closeModal}/> : 
+                {isModalOpen ? <AccountModal handleClick={closeModal}/> : 
                 <article className="h-screen flex flex-col gap-y-6 justify-center items-center">
                     <section>
                         <h1 className="text-slate-50 text-5xl">Weather</h1>

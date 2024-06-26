@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { AuthContext } from "../../contexts/UserAuth";
+import { useNavigate } from "react-router-dom";
 const SignUp = (props) => {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [verifyPassword, setVerifyPassword] = useState("");
     const [error, setHandleError] = useState("");
+
+    const { user, login, logout } = useContext(AuthContext);
+
+    const navigate = useNavigate();
+
     const handleError = (errorMessage) => {
         setHandleError("");
         setHandleError(errorMessage);
@@ -23,7 +30,6 @@ const SignUp = (props) => {
     }
     const handleFormSubmit = async (event) => {
         event.preventDefault();
-        console.log(`Account: ${username}, ${email}, ${password}`);
         if (password !== verifyPassword){
             handleError("Your passwords do not match.");
         }
@@ -34,14 +40,14 @@ const SignUp = (props) => {
             handleError("Your username must be longer than 3 characters.");
         }
         else if(password === verifyPassword){
-            const response = await fetch("http://localhost:3000/user/signup", {
+            await fetch("http://localhost:3000/user/signup", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
                 body: JSON.stringify({username, email, password}),
             })
-            //You could for example "setData" with the json that the server sent back
-            const json = await response.json();
+            login({username, email});
+            navigate("user/dashboard");
         }
     }
     return(<>
@@ -49,7 +55,9 @@ const SignUp = (props) => {
             <p className="text-3xl">Sign Up.</p>
         </section>
         <section className="pt-6 w-full">
-            <p>{error ?? error}</p>
+           {error ? <section>
+                <p className="text-red-500 bg-red-100 border-red-500 border-2 rounded-lg p-2">{error}</p><br/>
+            </section> : null}
             <form onSubmit={handleFormSubmit} className="flex flex-col w-full gap-2">
                 <input type="text" required value={username} onChange={handleUsernameInput} className="py-1.5 pl-1.5 border-zinc-600 border-2 rounded-lg" placeholder="Enter a username"/>
                 <input type="email" required value={email} onChange={handleEmailInput} className="py-1.5 pl-1.5 border-zinc-600 border-2 rounded-lg" placeholder="Enter your email address"/>
