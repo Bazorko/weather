@@ -84,10 +84,7 @@ userRouter.post("/signup", isNotAuth, async (req, res) => {
         req.isAuth = true;
         res.cookie("userAuth", jwtToken, {httpOnly: true});
         res.cookie("userAuthRefresh", jwtRefresh, {httpOnly: true});
-        res.json({
-            username,
-            email,
-        });
+        res.json({username, email});
     } catch (error) {
         console.log(error);
     }
