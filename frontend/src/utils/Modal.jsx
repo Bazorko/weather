@@ -1,6 +1,7 @@
 const Modal = (props) => {
     return(<>
         <article onClick={ event => {
+            event.stopPropagation();
             props.handleClick();
         }} className="h-screen absolute left-0 w-screen bg-opacity-60 bg-gray-400 flex flex-col justify-center items-center">
             <section onClick={event => {
