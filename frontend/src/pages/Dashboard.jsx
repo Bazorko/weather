@@ -6,11 +6,11 @@ import Container from "../utils/Container";
 import AccountModal from "../utils/AccountModal";
 const Dashboard = () => {
     const cities = [
-        {city: "Adams", state: "New York", temp: "75", temp_min: "50", temp_max: "100"},
-        {city: "Schuylerville", state: "New York", temp: "75", temp_min: "50", temp_max: "100"},
-        {city: "New York", state: "New York", temp: "75", temp_min: "50", temp_max: "100"},
+        {key: 1, city: "Adams", state: "New York", temp: "75", temp_min: "50", temp_max: "100"},
+        {key: 2, city: "Schuylerville", state: "New York", temp: "75", temp_min: "50", temp_max: "100"},
+        {key: 3, city: "New York", state: "New York", temp: "75", temp_min: "50", temp_max: "100"},
     ];
-    const { user, login, logout } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const navigate = useNavigate();
     const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
     const openAccountModal = (event) => {
@@ -20,10 +20,6 @@ const Dashboard = () => {
     const closeAccountModal = (event) => {
         event.stopPropagation();
         setIsAccountModalOpen(false);
-    }
-    const handleLogoutClick = () => {
-        logout();
-        navigate("/");
     }
     if(!user){
         useEffect(() => {
@@ -50,7 +46,21 @@ const Dashboard = () => {
                     <section>
                         {cities.map(city => {
                             return (
-                            <section></section>
+                                <>
+                                    <section className="flex rounded-lg border-2 border-gray-900">
+                                        <section>
+                                            <h2>{city.city}</h2>
+                                            <h3>{city.state}</h3>
+                                        </section>
+                                        <section>
+                                            <p>{city.temp}</p>
+                                            <section className="flex">
+                                                <p>{city.temp_min}</p>
+                                                <p>{city.temp_max}</p>
+                                            </section>
+                                        </section>
+                                    </section>
+                                </>
                         );
                         })}
                     </section>
