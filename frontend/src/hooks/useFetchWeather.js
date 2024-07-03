@@ -5,7 +5,7 @@ export const useFetchWeather = (city, stateAbbr) => {
     const [error, setError] = useState(null);
     const url = `http://localhost:3000/weather/${city}/${stateAbbr}`;
     useEffect(() => {
-        const testFetch = async () => {
+        const fetchWeatherData = async () => {
             try {
                 const response = await fetch(url);
                 const json = await response.json();
@@ -16,7 +16,7 @@ export const useFetchWeather = (city, stateAbbr) => {
                 setError(error);
             }
         }
-        testFetch();
+        fetchWeatherData();
     }, [url]);
     return {data, loading, error}
 }

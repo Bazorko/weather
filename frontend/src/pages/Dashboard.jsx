@@ -4,14 +4,29 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Container from "../utils/Container";
 import AccountModal from "../utils/AccountModal";
+import CityListItem from "../components/weather/CityListItem";
+import { useAddCityToList } from "../hooks/useAddCityToList";
 const Dashboard = () => {
-    const cities = [
+    const capitalizeFirstLetter = (str) => {
+        return str[0].toUpperCase()+str.slice(1).toLowerCase();
+    }
+    const displayCities = [
         {key: 1, city: "Adams", state: "New York", temp: "75", temp_min: "50", temp_max: "100"},
         {key: 2, city: "Schuylerville", state: "New York", temp: "75", temp_min: "50", temp_max: "100"},
         {key: 3, city: "New York", state: "New York", temp: "75", temp_min: "50", temp_max: "100"},
     ];
+
     const { user } = useContext(AuthContext);
+    console.log(user);
+    const { username, email } = user;
+
     const navigate = useNavigate();
+
+    const [inputValue, setInputValue] = useState("");
+    const handleInputChange = (event) => {
+        setInputValue(event.target.value);
+    }
+
     const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
     const openAccountModal = (event) => {
         event.stopPropagation();
@@ -21,13 +36,32 @@ const Dashboard = () => {
         event.stopPropagation();
         setIsAccountModalOpen(false);
     }
+
+    const addCityToList = async (event) => {
+        event.preventDefault();
+        const url = `http://localhost:3000/user/locations`;
+        const newCity = capitalizeFirstLetter(inputValue);
+        try {
+            await fetch(url, {
+                method: "POST",
+                credentials: "include",
+                headers:{
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({username, email, newCity}),
+            });
+        } catch(error) {
+            console.log(error);
+        }
+        //const {fetchList, loading, error} = useAddCityToList(username, email, newCity);
+    };
+
     if(!user){
         useEffect(() => {
             return navigate("/");
         }, []);
     }
     if(user){
-        const { username, email } = user;
         const usernameCapitalized = username[0].toUpperCase()+username.slice(1).toLowerCase();
         const emailLowercase = email.toLowerCase();
         return(<>
@@ -45,26 +79,16 @@ const Dashboard = () => {
                     </section>
                 </nav>
                 <Container>
-                    <section className="flex flex-col items-center">
-                        <h1>{usernameCapitalized}'s Saved Cities</h1>
-                        {cities.map(city => {
+                    <form className="flex items-center justify-center gap-x-4 mt-4">
+                        <input type="text" placeholder="Enter a city"className="rounded-lg border-2 border-neutral-400 py-2 pl-1 pr-8" value={inputValue} onChange={handleInputChange}/>
+                        <button className="rounded-lg border-2 border-neutral-400 px-8 py-2" onClick={addCityToList}>Search</button>
+                    </form>
+                    <section className="flex flex-col items-center gap-y-4">
+                        <h1 className="text-2xl pt-4">{usernameCapitalized}'s Saved Cities</h1>
+                        {displayCities.map(city => {
                             return (
-                                <>
-                                    <section key={city.key} className="flex w-11/12 sm:w-10/12 md:w-8/12 lg:w-6/12 m-4 justify-center rounded-lg border-2 border-neutral-400 p-4">
-                                        <section className="flex-1 text-center">
-                                            <h2 className="p-2">{city.city}</h2>
-                                            <h3 className="p-2">{city.state}</h3>
-                                        </section>
-                                        <section className="flex-1 text-center">
-                                            <p className="p-2">{city.temp}&deg; F</p>
-                                            <section className="flex">
-                                                <p className="flex-1 text-right p-2">{city.temp_min}&deg; F</p>
-                                                <p className="flex-1 text-left p-2">{city.temp_max}&deg; F</p>
-                                            </section>
-                                        </section>
-                                    </section>
-                                </>
-                        );
+                                <CityListItem key={city.key} city={city}/>
+                            );
                         })}
                     </section>
                 </Container>

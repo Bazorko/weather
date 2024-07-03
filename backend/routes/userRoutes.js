@@ -9,8 +9,7 @@ const userRouter = express.Router();
 mongoose.connect(process.env.MONGO_URL);
 
 const userAuth = (req, res, next) => {
-    const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
+    const token = req.cookies.userAuth;
     if(token == null){
         return res.json({message: "Unauthorized uco"});
     }
@@ -73,7 +72,7 @@ userRouter.post("/signup", isNotAuth, async (req, res) => {
             password: hashedPassword,
             salt,
             jwtRefresh,
-            locations: [
+            cities: [
                 "test 1",
                 "test 2",
                 "test 3"
@@ -111,17 +110,18 @@ userRouter.get("/locations", isNotAuth, userAuth, async (req, res) => {
     try{
         const {username, email} = req.body;
         const findUser = await User.findOne({username, email});
-        res.json(findUser.locations);
+        res.json(findUser.cities);
     } catch(error){
         console.log(error);
     }
 });
 userRouter.post("/locations", isNotAuth, userAuth, async (req, res) => {
+    console.log(1);
     try{
-        const {username, email} = req.body;
+        const {username, email, newCity} = req.body;
         const findUser = await User.findOne({username, email});
-        const locations = findUser.locations;
-        locations.push("uco, where uco");
+        //const cities = findUser.cities;
+        findUser.cities.push(newCity);
         await findUser.save();
         res.json({message: "saved"});
     } catch (error){

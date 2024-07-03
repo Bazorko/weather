@@ -22,7 +22,7 @@ const userSchema = mongoose.Schema({
     jwtRefresh: {
         type: String
     },
-    locations: [
+    cities: [
         String
     ]
 });
