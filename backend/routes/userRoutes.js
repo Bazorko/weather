@@ -64,7 +64,7 @@ userRouter.post("/signup", isNotAuth, async (req, res) => {
             return res.json({message: "Username or email already taken."});
         }
         //Create user if not found.
-        const jwtToken = authJWT.generateToken({username, email}, process.env.SECRET_ACCESS_TOKEN, "15m");
+        const jwtToken = authJWT.generateToken({username, email}, process.env.SECRET_ACCESS_TOKEN, "60m");
         const jwtRefresh = authJWT.generateToken({username, email}, process.env.SECRET_REFRESH_TOKEN, "48h");
         const newUser = await User.create({
             username,
@@ -72,11 +72,7 @@ userRouter.post("/signup", isNotAuth, async (req, res) => {
             password: hashedPassword,
             salt,
             jwtRefresh,
-            cities: [
-                "test 1",
-                "test 2",
-                "test 3"
-            ],
+            cities: [],
         });
         newUser.save();
         //Auth upon account creation
@@ -106,20 +102,20 @@ userRouter.post("/reauth", isNotAuth, (req, res) => {
     });
 });
 
-userRouter.get("/locations", isNotAuth, userAuth, async (req, res) => {
+userRouter.get("/locations/:username", isNotAuth, userAuth, async (req, res) => {
     try{
-        const {username, email} = req.body;
-        const findUser = await User.findOne({username, email});
+        const {username} = req.params;
+        const findUser = await User.findOne({username});
         res.json(findUser.cities);
+        console.log("Ping");
     } catch(error){
         console.log(error);
     }
 });
 userRouter.post("/locations", isNotAuth, userAuth, async (req, res) => {
-    console.log(1);
     try{
-        const {username, email, newCity} = req.body;
-        const findUser = await User.findOne({username, email});
+        const {username, newCity} = req.body;
+        const findUser = await User.findOne({username});
         //const cities = findUser.cities;
         findUser.cities.push(newCity);
         await findUser.save();

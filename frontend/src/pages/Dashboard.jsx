@@ -5,27 +5,49 @@ import { Link } from "react-router-dom";
 import Container from "../utils/Container";
 import AccountModal from "../utils/AccountModal";
 import CityListItem from "../components/weather/CityListItem";
-import { useAddCityToList } from "../hooks/useAddCityToList";
 const Dashboard = () => {
-    const capitalizeFirstLetter = (str) => {
-        return str[0].toUpperCase()+str.slice(1).toLowerCase();
-    }
-    const displayCities = [
-        {key: 1, city: "Adams", state: "New York", temp: "75", temp_min: "50", temp_max: "100"},
-        {key: 2, city: "Schuylerville", state: "New York", temp: "75", temp_min: "50", temp_max: "100"},
-        {key: 3, city: "New York", state: "New York", temp: "75", temp_min: "50", temp_max: "100"},
-    ];
-
     const { user } = useContext(AuthContext);
-    console.log(user);
     const { username, email } = user;
-
-    const navigate = useNavigate();
 
     const [inputValue, setInputValue] = useState("");
     const handleInputChange = (event) => {
         setInputValue(event.target.value);
     }
+
+    const navigate = useNavigate();
+
+    const capitalizeFirstLetter = (str) => {
+        return str[0].toUpperCase()+str.slice(1).toLowerCase();
+    }
+
+    const city = [];
+    const [displayCities, setDisplayCities] = useState([]);
+    const fetchCities = async (str) => {
+        console.log("Fetched");
+        const fetchCitiesFunc = async () => {
+            const url = `http://localhost:3000/user/locations/${username}`;
+            const response = await fetch(url, {
+                method: "GET",
+                credentials: "include",
+                headers:{
+                    'Content-Type': 'application/json',
+                },
+            });
+            const json = await response.json();
+            for(let i = 0; i < json.length; i++){
+                city.push(json[i]);
+                setDisplayCities(city);
+            }
+            console.log(json);
+        }
+        fetchCitiesFunc();
+    };
+
+    /*const displayCities = [
+        {key: 1, city: "Adams", state: "New York", temp: "75", temp_min: "50", temp_max: "100"},
+        {key: 2, city: "Schuylerville", state: "New York", temp: "75", temp_min: "50", temp_max: "100"},
+        {key: 3, city: "New York", state: "New York", temp: "75", temp_min: "50", temp_max: "100"},
+    ];*/
 
     const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
     const openAccountModal = (event) => {
@@ -48,20 +70,22 @@ const Dashboard = () => {
                 headers:{
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({username, email, newCity}),
+                body: JSON.stringify({username, newCity}),
             });
+            fetchCities();
+            setInputValue("");
         } catch(error) {
             console.log(error);
         }
-        //const {fetchList, loading, error} = useAddCityToList(username, email, newCity);
     };
-
     if(!user){
-        useEffect(() => {
-            return navigate("/");
-        }, []);
+        return navigate("/");   
     }
-    if(user){
+        useEffect(() => {
+            console.log(1);
+            fetchCities();
+        },[]);
+
         const usernameCapitalized = username[0].toUpperCase()+username.slice(1).toLowerCase();
         const emailLowercase = email.toLowerCase();
         return(<>
@@ -87,7 +111,8 @@ const Dashboard = () => {
                         <h1 className="text-2xl pt-4">{usernameCapitalized}'s Saved Cities</h1>
                         {displayCities.map(city => {
                             return (
-                                <CityListItem key={city.key} city={city}/>
+                                <p>{city}</p>
+                               //<CityListItem key={city.key} city={city}/>
                             );
                         })}
                     </section>
@@ -95,7 +120,6 @@ const Dashboard = () => {
             </section>
         </>);   
     }
-}
 export default Dashboard;
 
 //<button onClick={handleLogoutClick} className="text-slate-50 px-4 py-2 border-2 rounded-lg">Log Out</button>
