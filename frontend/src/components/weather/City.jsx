@@ -10,6 +10,7 @@ const City = () => {
         const {data, loading, error} = await useFetchWeather(city, stateAbbr);
         setData(data);
         setLoading(loading);
+        //setError();
     }
     getWeather();
         if(loading){

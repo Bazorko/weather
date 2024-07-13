@@ -8,7 +8,7 @@ const SignUp = (props) => {
     const [verifyPassword, setVerifyPassword] = useState("");
     const [error, setHandleError] = useState("");
 
-    const { user, login, logout } = useContext(AuthContext);
+    const { login } = useContext(AuthContext);
 
     const navigate = useNavigate();
 

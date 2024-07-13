@@ -10,8 +10,8 @@ mongoose.connect(process.env.MONGO_URL);
 
 const userAuth = (req, res, next) => {
     const token = req.cookies.userAuth;
-    if(token == null){
-        return res.json({message: "Unauthorized uco"});
+    if(!token){
+        return res.json({message: "Unauthorized"});
     }
     authJWT.verifyToken(req, res, next, token);
 }
@@ -64,7 +64,7 @@ userRouter.post("/signup", isNotAuth, async (req, res) => {
             return res.json({message: "Username or email already taken."});
         }
         //Create user if not found.
-        const jwtToken = authJWT.generateToken({username, email}, process.env.SECRET_ACCESS_TOKEN, "60m");
+        const jwtToken = authJWT.generateToken({username, email}, process.env.SECRET_ACCESS_TOKEN, "24h");
         const jwtRefresh = authJWT.generateToken({username, email}, process.env.SECRET_REFRESH_TOKEN, "48h");
         const newUser = await User.create({
             username,
@@ -107,7 +107,6 @@ userRouter.get("/locations/:username", isNotAuth, userAuth, async (req, res) => 
         const {username} = req.params;
         const findUser = await User.findOne({username});
         res.json(findUser.cities);
-        console.log("Ping");
     } catch(error){
         console.log(error);
     }

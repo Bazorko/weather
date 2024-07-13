@@ -1,22 +1,32 @@
-import { useState, useEffect } from "react";
-export const useFetchWeather = (city) => {
-    const [data, setData] = useState(null);
+import { useEffect, useState } from "react";
+import { useFetchWeather } from "./useFetchWeather";
+
+const useFetchCities = (username) => {
+    const [cities, setCities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const url = `http://localhost:3000/user/location`;
-    useEffect(() => {
-        const fetchWeatherData = async () => {
-            try {
-                const response = await fetch(url);
-                const json = await response.json();
-                setData(json);
-                setLoading(false);
-            } catch(error) {
-                setLoading(false);
-                setError(error);
+    const fetchData = async () => {
+        const citiesArray = [];
+        const url = `http://localhost:3000/user/locations/${username}`;
+        try {
+            const response = await fetch(url, {
+                method: "GET",
+                credentials: "include",
+            });
+            const json = await response.json();
+            for(let i = 0; i < json.length; i++){
+                citiesArray.push(json[i]);
             }
+            setCities(citiesArray);
+            setLoading(false);
+        } catch(error) {
+            setError(error);
+            setLoading(false);
         }
-        fetchWeatherData();
-    }, [url]);
-    return {data, loading, error}
-}
+    }
+    useEffect(() => {
+        fetchData();
+    },[]);
+    return {cities, loading, error};
+};
+export default useFetchCities;

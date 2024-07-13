@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Container from "../utils/Container.jsx";
 import SearchForCity from "../components/weather/SearchForCity.jsx";
 import AccountModal from "../components/account/AccountModal.jsx";
@@ -10,6 +11,13 @@ const Home = () => {
     const closeModal = () => {
         setIsModalOpen(false);
     }
+    const username = localStorage.getItem("username");
+    const navigate = useNavigate();
+    useEffect(() => {
+        if(username){
+            return navigate("/user/dashboard");   
+        }
+    });
     return(<>
         <section className="h-screen bg-blue-500">
             <Container>
