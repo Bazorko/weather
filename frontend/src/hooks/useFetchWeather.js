@@ -9,6 +9,7 @@ export const useFetchWeather = (city, stateAbbr) => {
             try {
                 const response = await fetch(url);
                 const json = await response.json();
+                console.log(json);
                 setData(json);
                 setLoading(false);
             } catch(error) {
@@ -18,5 +19,5 @@ export const useFetchWeather = (city, stateAbbr) => {
         }
         fetchWeatherData();
     }, [url]);
-    return {data, loading, error}
+    return {data, loading, error};
 }

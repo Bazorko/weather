@@ -4,7 +4,6 @@ import CityList from "../components/weather/CityList";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import useFetchCities from "../hooks/useFetchCities";
 import { useAddCity } from "../hooks/useAddCity";
 import capitalizeFirstLetter from "../utils/capitalizeFirstLetter";
 const Dashboard = () => {
@@ -13,7 +12,7 @@ const Dashboard = () => {
 
     const username = localStorage.getItem("username");
 
-    const { cities, loading, error } = useFetchCities(username);
+    const [counter, setCounter] = useState(0);
 
     const [inputValue, setInputValue] = useState("");
     const handleInputChange = (event) => {
@@ -23,8 +22,7 @@ const Dashboard = () => {
     //Add city to database
     const addCity = (event) => {
         event.preventDefault();
-        if(cities.length < 3){
-            console.log(cities);
+        if(counter < 3){
             const city = inputValue;
             useAddCity({username, city});
             setInputValue("");
@@ -33,6 +31,7 @@ const Dashboard = () => {
         else if(cities.length >= 3){
             return null;
         }
+        setCounter(counter++);
     }
 
     //Navigates to away from dashboard if no user info is found
@@ -74,7 +73,7 @@ const Dashboard = () => {
                 </form>
                 <section className="flex flex-col items-center gap-y-4">
                     <h1 className="text-2xl pt-4">{`${capitalizeFirstLetter(username)}'s Saved City`}</h1>
-                    <CityList displayCities={cities}/>
+                    <CityList username={username}/>
                 </section>
             </Container>
         </section>

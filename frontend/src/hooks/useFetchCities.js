@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { useFetchWeather } from "./useFetchWeather";
 
-const useFetchCities = (username) => {
+export const useFetchCities = (username) => {
     const [cities, setCities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -14,10 +13,7 @@ const useFetchCities = (username) => {
                 credentials: "include",
             });
             const json = await response.json();
-            for(let i = 0; i < json.length; i++){
-                citiesArray.push(json[i]);
-            }
-            setCities(citiesArray);
+            setCities(json);
             setLoading(false);
         } catch(error) {
             setError(error);
@@ -29,4 +25,3 @@ const useFetchCities = (username) => {
     },[]);
     return {cities, loading, error};
 };
-export default useFetchCities;

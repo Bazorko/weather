@@ -19,7 +19,7 @@ const City = () => {
         return(<>
                 {data &&<section className="flex flex-col items-center mt-40">
                     <section className="flex flex-col items-center">
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl pt-3 pb-1.5">{Math.round(data.daily[0].temp.day)}&deg; F</h1>
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl pt-3 pb-1.5">{Math.round(data.current.temp)}&deg; F</h1>
                         <section className="flex flex-row text-xs gap-x-4">
                             <p>L: {Math.round(data.daily[0].temp.min)}&deg; F</p>
                             <p>H: {Math.round(data.daily[0].temp.max)}&deg; F</p>
