@@ -30,12 +30,14 @@ app.get("/weather/:city/:stateAbbr", cors({origin: "http://localhost:5173", meth
                 const weatherAPICall = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${process.env.API_KEY}&units=imperial`;
                 const response = await fetch(weatherAPICall);
                 const weatherJSON = await response.json();
-                res.json(weatherJSON);
+                res.status(200).json(weatherJSON);
             } catch (error) {
                 console.log(error);
+                res.status(404).json({message: "Error finding weather data for the provided city."});
             }
         } catch (error) {
             console.log(error);
+            res.status(404).json({message: "Error geocoding for the provided city."});
         }
     }
     fetchWeather();

@@ -11,7 +11,7 @@ mongoose.connect(process.env.MONGO_URL);
 const userAuth = (req, res, next) => {
     const token = req.cookies.userAuth;
     if(!token){
-        return res.json({message: "Unauthorized"});
+        return res.status(401).json({message: "Unauthorized", redirect: "/"});
     }
     authJWT.verifyToken(req, res, next, token);
 }
@@ -19,7 +19,7 @@ const userAuth = (req, res, next) => {
  //If user has auth themselves, then you dont want them to visit pages where they might think they have to do it again.
  const isNotAuth = (req, res, next) => {
     if(req.isAuth){
-        return res.json({message: "redirect to account / dashboard pg"});
+        return res.status(204).json({message: "Already authenticated.", reidrect: "/user/dashboard"});
     }
     next();
  }
@@ -30,7 +30,7 @@ userRouter.post("/signin", isNotAuth, async (req, res) => {
     try{
         const findUser = await User.findOne({email});
         if(!findUser){
-            res.json({message: "This account does not exist."});
+            res.status(200).json({message: "This account does not exist."});
         } else if(cryptoPassword.compare(findUser.password, findUser.salt, password)) {
             const jwtToken = authJWT.generateToken({email}, process.env.SECRET_ACCESS_TOKEN, "15m");
             let jwtRefresh = undefined;
@@ -44,7 +44,7 @@ userRouter.post("/signin", isNotAuth, async (req, res) => {
             res.cookie("userAuth", jwtToken, {httpOnly: true});
             res.cookie("userAuthRefresh", jwtRefresh, {httpOnly: true});
             req.isAuth = true;
-            res.json({username: findUser.username, email: findUser.email});
+            res.status(200).json({username: findUser.username, email: findUser.email});
         }
     } catch (error) {
         console.log(error);
@@ -61,7 +61,7 @@ userRouter.post("/signup", isNotAuth, async (req, res) => {
         //Search db for user.
         const findUser = await User.findOne({username, email});
         if(findUser){
-            return res.json({message: "Username or email already taken."});
+            return res.status(409).json({message: "Username or email already taken."});
         }
         //Create user if not found.
         const jwtToken = authJWT.generateToken({username, email}, process.env.SECRET_ACCESS_TOKEN, "24h");
@@ -79,7 +79,7 @@ userRouter.post("/signup", isNotAuth, async (req, res) => {
         req.isAuth = true;
         res.cookie("userAuth", jwtToken, {httpOnly: true});
         res.cookie("userAuthRefresh", jwtRefresh, {httpOnly: true});
-        res.json({username, email});
+        res.status(201).json({username, email});
     } catch (error) {
         console.log(error);
     }
@@ -87,12 +87,12 @@ userRouter.post("/signup", isNotAuth, async (req, res) => {
 
 userRouter.post("/reauth", isNotAuth, (req, res) => {
     const refreshToken = req.cookies.userAuthRefresh;
-    if(refreshToken == null){
-        return res.json({message: "Unauthorized."});
+    if(!refreshToken){
+        return res.status(401).res.json({message: "Unauthorized."});
     }
     jwt.verify(refreshToken, process.env.SECRET_REFRESH_TOKEN, (error, user) => {
         if(error){
-            return res.json({message: "Forbidden"});
+            return res.status(403).res.json({message: "Forbidden"});
         }
         const jwtToken = authJWT.generateToken({username: user.username, email: user.email}, process.env.SECRET_ACCESS_TOKEN, "15m");
         console.log(jwtToken);
@@ -106,9 +106,10 @@ userRouter.get("/locations/:username", isNotAuth, userAuth, async (req, res) => 
     try{
         const {username} = req.params;
         const findUser = await User.findOne({username});
-        res.json(findUser.cities);
+        res.status(200).json(findUser.cities);
     } catch(error){
         console.log(error);
+        res.status(400).json({message: "Could not retrieve cities."});
     }
 });
 userRouter.post("/locations", isNotAuth, userAuth, async (req, res) => {
@@ -118,9 +119,10 @@ userRouter.post("/locations", isNotAuth, userAuth, async (req, res) => {
         //const cities = findUser.cities;
         findUser.cities.push(newCity);
         await findUser.save();
-        res.json({message: "saved"});
+        res.status(201).json({message: "City added."});
     } catch (error){
         console.log(error);
+        res.status(400).json({message: "City not added."});
     }
 });
 

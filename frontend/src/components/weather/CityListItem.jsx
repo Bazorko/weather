@@ -11,8 +11,11 @@ const CityListItem = (props) => {
                     <h2 className="p-2">{props.city}</h2>
                     <h3 className="p-2">{props.stateAbbr}</h3>
                 </section>
-                <section className="flex-1 text-center">
-                    <p className="p-2">{Math.round(data.current.temp)}&deg; F</p>
+                <section className="flex-1">
+                    <section className="flex">
+                        <p className="flex-1 text-right p-2">{Math.round(data.current.temp)}&deg; F</p>
+                        <p className="flex-1 text-left p-2">{data.current.weather[0].main}</p>
+                    </section>
                     <section className="flex">
                         <p className="flex-1 text-right p-2">L: {Math.round(data.daily[0].temp.min)}&deg; F</p>
                         <p className="flex-1 text-left p-2">H: {Math.round(data.daily[0].temp.max)}&deg; F</p>

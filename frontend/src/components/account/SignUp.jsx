@@ -47,7 +47,7 @@ const SignUp = (props) => {
                 body: JSON.stringify({username, email, password}),
             })
             login({username, email});
-            navigate("user/dashboard");
+            navigate("../../../../user/dashboard");
         }
     }
     return(<>

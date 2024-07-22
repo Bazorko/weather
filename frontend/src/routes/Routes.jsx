@@ -11,10 +11,12 @@ const routes = [
     {
         path: "weather/:city/:stateAbbr/:stateFull",
         element: <Weather />,
+        errorElement: <Error />
     },
     {
         path: "user/dashboard",
         element: <Dashboard />,
+        errorElement: <Error />
     },
 ];
 export default routes;

@@ -1,4 +1,5 @@
 import capitalizeFirstLetter from "../utils/capitalizeFirstLetter"; 
+import { useState } from "react";
 export const useAddCity = async ({username, city}) => {
     const url = `http://localhost:3000/user/locations`;
     const newCity = capitalizeFirstLetter(city);

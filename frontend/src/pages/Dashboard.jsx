@@ -56,9 +56,7 @@ const Dashboard = () => {
         <section className="h-screen bg-slate-50" onClick={closeAccountModal}>
             <nav className="w-full h-fit bg-blue-500 p-5 px-8 lg:px-32 flex flex-row items-center relative">
                 <section className="w-2/4">
-                    <Link to="/">
-                        <h1 className="text-slate-50 text-3xl">Weather</h1>
-                    </Link>
+                    <h1 className="text-slate-50 text-3xl">Weather</h1>
                 </section>
                 <section className="w-2/4 flex flex-col">
                     <div className="ml-auto">
@@ -81,4 +79,4 @@ const Dashboard = () => {
 }
 export default Dashboard;
 
-//<button onClick={handleLogoutClick} className="text-slate-50 px-4 py-2 border-2 rounded-lg">Log Out</button>
+//setUsername instead of location.reload to get react to rerender weather items
