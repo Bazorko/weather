@@ -116,14 +116,26 @@ userRouter.post("/locations", isNotAuth, userAuth, async (req, res) => {
     try{
         const {username, newCity} = req.body;
         const findUser = await User.findOne({username});
-        //const cities = findUser.cities;
-        findUser.cities.push(newCity);
+        const city = {
+            city: newCity,
+        }
+        findUser.cities.push(city);
         await findUser.save();
         res.status(201).json({message: "City added."});
     } catch (error){
         console.log(error);
         res.status(400).json({message: "City not added."});
     }
+});
+userRouter.post("/delete/:city", isNotAuth, userAuth, async (req, res) => {
+    const {city} = req.params;
+    const {email} = req.user;
+    const {cities} = req.body;
+    console.log(req.body);
+    const findUser = await User.findOne({email});
+    const filteredCities = findUser.cities.filter(value => value.city !== city);
+    findUser.cities = filteredCities;
+    findUser.save();
 });
 
 module.exports = userRouter;

@@ -25,15 +25,17 @@ app.get("/weather/:city/:stateAbbr", cors({origin: "http://localhost:5173", meth
             const coordsAPICall = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${stateAbbr},${840}&limit=${1}&appid=${process.env.API_KEY}`;
             const response = await fetch(coordsAPICall);
             const coordsJSON = await response.json();
-            const { lat, lon } = coordsJSON[0];
-            try {
-                const weatherAPICall = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${process.env.API_KEY}&units=imperial`;
-                const response = await fetch(weatherAPICall);
-                const weatherJSON = await response.json();
-                res.status(200).json(weatherJSON);
-            } catch (error) {
-                console.log(error);
-                res.status(404).json({message: "Error finding weather data for the provided city."});
+            if(coordsJSON){
+                try {
+                    const { lat, lon } = coordsJSON[0];
+                    const weatherAPICall = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${process.env.API_KEY}&units=imperial`;
+                    const response = await fetch(weatherAPICall);
+                    const weatherJSON = await response.json();
+                    res.status(200).json(weatherJSON);
+                } catch (error) {
+                    console.log(error);
+                    res.status(404).json({message: "Error finding weather data for the provided city."});
+                }
             }
         } catch (error) {
             console.log(error);

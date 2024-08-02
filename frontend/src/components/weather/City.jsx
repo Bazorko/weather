@@ -9,6 +9,9 @@ const City = () => {
     city = city.charAt(0).toUpperCase() + city.slice(1).toLowerCase();
     const getWeather = async () => {
         const {data, loading, error} = await useFetchWeather(city, stateAbbr);
+        if(data.message){
+
+        }
         setData(data);
         setLoading(loading);
         setError(error);

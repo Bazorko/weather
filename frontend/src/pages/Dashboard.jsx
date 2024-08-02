@@ -3,16 +3,21 @@ import AccountModal from "../utils/AccountModal";
 import CityList from "../components/weather/CityList";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 import { useAddCity } from "../hooks/useAddCity";
 import capitalizeFirstLetter from "../utils/capitalizeFirstLetter";
+import { useFetchCities } from "../hooks/useFetchCities";
 const Dashboard = () => {
 
     const navigate = useNavigate();
 
     const username = localStorage.getItem("username");
 
-    const [counter, setCounter] = useState(0);
+    const { cities, loading, error } = useFetchCities(username);
+    const [citiesArray, setCitiesArray] = useState([]);
+
+    useEffect(() => {
+        setCitiesArray([...cities]);
+    }, [cities]);
 
     const [inputValue, setInputValue] = useState("");
     const handleInputChange = (event) => {
@@ -22,7 +27,8 @@ const Dashboard = () => {
     //Add city to database
     const addCity = (event) => {
         event.preventDefault();
-        if(counter < 3){
+        console.log(citiesArray.length);
+        if(citiesArray.length < 3){
             const city = inputValue;
             useAddCity({username, city});
             setInputValue("");
@@ -31,7 +37,7 @@ const Dashboard = () => {
         else if(cities.length >= 3){
             return null;
         }
-        setCounter(counter++);
+
     }
 
     //Navigates to away from dashboard if no user info is found
@@ -71,12 +77,10 @@ const Dashboard = () => {
                 </form>
                 <section className="flex flex-col items-center gap-y-4">
                     <h1 className="text-2xl pt-4">{`${capitalizeFirstLetter(username)}'s Saved City`}</h1>
-                    <CityList username={username}/>
+                    <CityList citiesArray={citiesArray} setCitiesArray={setCitiesArray} username={username}/>
                 </section>
             </Container>
         </section>
     </>);
 }
 export default Dashboard;
-
-//setUsername instead of location.reload to get react to rerender weather items

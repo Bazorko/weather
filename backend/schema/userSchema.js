@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
 
+const citySchema = new mongoose.Schema({
+    city: String, // or any other properties you need
+});
+
 const userSchema = mongoose.Schema({
     username: {
         type: String,
@@ -23,7 +27,9 @@ const userSchema = mongoose.Schema({
         type: String
     },
     cities: [
-        String
-    ]
+        {
+            city: String,
+        }
+    ],
 });
 module.exports = mongoose.model("User", userSchema);
