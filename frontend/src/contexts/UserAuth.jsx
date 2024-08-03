@@ -7,7 +7,6 @@ export const AuthProvider = (props) => {
     const login = (userData) => {
         if(userData){
             setUser(userData);
-            console.log(userData);
             const { username } = userData;
             localStorage.setItem("username", username);
         }

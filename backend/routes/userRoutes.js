@@ -131,7 +131,6 @@ userRouter.post("/delete/:city", isNotAuth, userAuth, async (req, res) => {
     const {city} = req.params;
     const {email} = req.user;
     const {cities} = req.body;
-    console.log(req.body);
     const findUser = await User.findOne({email});
     const filteredCities = findUser.cities.filter(value => value.city !== city);
     findUser.cities = filteredCities;

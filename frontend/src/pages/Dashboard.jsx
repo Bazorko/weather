@@ -27,7 +27,6 @@ const Dashboard = () => {
     //Add city to database
     const addCity = (event) => {
         event.preventDefault();
-        console.log(citiesArray.length);
         if(citiesArray.length < 3){
             const city = inputValue;
             useAddCity({username, city});

@@ -2,22 +2,22 @@ import { useFetchWeather } from "../../hooks/useFetchWeather";
 
 const CityListItem = (props) => {
     const {data, loading, error} = useFetchWeather(props.city, props.stateAbbr);
-    const handleDeleteClick = () => {
-        //const response
+    const handleDeleteClick = (cityID) => {
+        const newCityArray = props.citiesArray.filter(city => city._id !== cityID);
+        props.setCitiesArray(newCityArray);
         fetch(`http://localhost:3000/user/delete/${props.city}`, {
             method: "post",
             credentials: "include",
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                "test": "testing",
-            }),
         })
     }
     return(<>
         {data &&
-            <section onClick={handleDeleteClick} className="flex w-11/12 sm:w-10/12 md:w-8/12 lg:w-6/12 justify-center rounded-lg border-2 border-neutral-400 p-4">
+            <section onClick={() => {
+                handleDeleteClick(props.id);
+            }} className="flex w-11/12 sm:w-10/12 md:w-8/12 lg:w-6/12 justify-center rounded-lg border-2 border-neutral-400 p-4">
                 <section className="flex-1 text-center">
                     <h2 className="p-2">{props.city}</h2>
                     <h3 className="p-2">{props.stateAbbr}</h3>
