@@ -36,7 +36,6 @@ const Dashboard = () => {
         else if(cities.length >= 3){
             return null;
         }
-
     }
 
     //Navigates to away from dashboard if no user info is found

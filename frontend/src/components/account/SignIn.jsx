@@ -44,23 +44,51 @@ const SignIn = (props) => {
     const handlePasswordInput = (event) => {
         setPassword(event.target.value);
     }
+    const [forgotPasswordModal, setForgotPasswordModal] = useState(false);
+    const handleForgotPassword = (status) => {
+        setForgotPasswordModal(status);
+    }
     return(<>
-        <section>
-            <p className="text-3xl">Sign In.</p>
-        </section>
-        {message ? <section className="pt-6 w-full">
-            <p className="text-red-500 bg-red-100 border-red-500 border-2 rounded-lg p-2">{message}</p>
-        </section> : null}
-        <section className="pt-6 w-full">
-            <form onSubmit={handleFormSubmit} className="flex flex-col w-full gap-2">
-                <input type="email" name="email" value={email} onChange={handleEmailInput} className="py-1.5 pl-1.5 border-zinc-600 border-2 rounded-lg" placeholder="Enter your email address"/>
-                <input type="password" name="password" value={password} onChange={handlePasswordInput} className="py-1.5 pl-1.5 border-zinc-600 border-2 rounded-lg" placeholder="Enter your password"/>
-                <button type="submit" className="py-2 border-2 rounded-lg bg-blue-500 text-slate-50">Sign In</button>
-            </form>
-        </section>
-        <section className="p-6 cursor-pointer">
-            <p onClick={props.handleClick} className="text-center">Don't have an account?</p>
-        </section>
+        {forgotPasswordModal ? <> 
+            <section>
+                <p className="text-3xl">Forgot Password?</p>
+            </section>
+            <section className="pt-6 w-full">
+                <form onSubmit={handleFormSubmit} className="flex flex-col w-full gap-2">
+                    <input type="email" name="email" value={email} onChange={handleEmailInput} className="py-1.5 pl-1.5 border-zinc-600 border-2 rounded-lg" placeholder="Enter your email address"/>
+                    <button type="submit" className="py-2 border-2 rounded-lg bg-blue-500 text-slate-50">Forgot Password?</button>
+                </form>
+            </section>
+            <section className="m-6">
+                <p className="cursor-pointer hover:underline" onClick={() => {
+                    handleForgotPassword(false);
+                }}>Remembered Password?</p>
+            </section>
+        </> :
+        <> 
+            <section>
+                <p className="text-3xl">Sign In.</p>
+            </section>
+            {message ? <section className="pt-6 w-full">
+                <p className="text-red-500 bg-red-100 border-red-500 border-2 rounded-lg p-2">{message}</p>
+            </section> : null}
+            <section className="pt-6 w-full">
+                <form onSubmit={handleFormSubmit} className="flex flex-col w-full gap-2">
+                    <input type="email" name="email" value={email} onChange={handleEmailInput} className="py-1.5 pl-1.5 border-zinc-600 border-2 rounded-lg" placeholder="Enter your email address"/>
+                    <input type="password" name="password" value={password} onChange={handlePasswordInput} className="py-1.5 pl-1.5 border-zinc-600 border-2 rounded-lg" placeholder="Enter your password"/>
+                    <button type="submit" className="py-2 border-2 rounded-lg bg-blue-500 text-slate-50">Sign In</button>
+                </form>
+            </section>
+            <section className="mt-6">
+                <p onClick={() => {
+                    handleForgotPassword(true);
+                }} className="cursor-pointer hover:underline">Forgot Password?</p>
+            </section>
+            <section className="m-6">
+                <p onClick={props.handleClick} className="cursor-pointer hover:underline">Don't have an account?</p>
+            </section>
+        </>
+        }
     </>);
 }
 export default SignIn;
