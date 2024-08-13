@@ -19,7 +19,7 @@ const AccountModal = (props) => {
         setIsModalOpen(false);
     }
     return(<>
-        {isModalOpen ? <div className="absolute top-0 left-0 bg-amber-600"><Modal handleClick={closeChangePasswordModal}><ChangePassword/></Modal></div> : 
+        {isModalOpen ? <div className="absolute top-0 left-0"><Modal handleClick={closeChangePasswordModal}><ChangePassword/></Modal></div> : 
         <section className="p-2 text-center rounded-lg bg-slate-50">
             <p className="cursor-pointer" onClick={openChangePasswordModal}>Change Password</p>
             <p className="cursor-pointer" onClick={handleLogoutClick}>Logout</p>

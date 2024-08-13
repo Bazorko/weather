@@ -6,13 +6,13 @@ const hash = async (password) => {
     return {hashedPassword, salt};
 }
 
-const compare = async (alreadyHashedPassword, salt, password) => {
+const compare = async (alreadyHashedPassword, salt, password, res) => {
     const hashedPassword = await crypto.pbkdf2Sync(password, salt, 100000, 64, "sha256").toString("hex");
     if(hashedPassword === alreadyHashedPassword){
         return true;
     }
     else if(hashedPassword !== alreadyHashedPassword){
-        res.status(403).json({message: "Password incorrect."});
+        return res.status(403).json({message: "Password incorrect."});
     }
     return hashedPassword === alreadyHashedPassword;
 }

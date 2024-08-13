@@ -16,22 +16,24 @@ const userAuth = (req, res, next) => {
     authJWT.verifyToken(req, res, next, token);
 }
 
- //If user has auth themselves, then you dont want them to visit pages where they might think they have to do it again.
- const isNotAuth = (req, res, next) => {
-    if(req.isAuth){
-        return res.status(204).json({message: "Already authenticated.", reidrect: "/user/dashboard"});
-    }
-    next();
- }
+ //If user has alerady authenicated themselves, then you dont want them to visit pages where they might think they have to do it again.
+/*const isNotAuth = (req, res, next) => {
+if(req.isAuth){
+    return res.status(204).json({message: "Already authenticated.", reidrect: "/user/dashboard"});
+}
+next();
+}*/
 
-userRouter.post("/signin", isNotAuth, async (req, res) => {
+ /* Sign In or Create Accouitn Routes */
+
+userRouter.post("/signin", async (req, res) => {
     const {email, password} = req.body;
     //Search db for user
     try{
         const findUser = await User.findOne({email});
         if(!findUser){
             res.status(403).json({message: "This account does not exist."});
-        } else if(cryptoPassword.compare(findUser.password, findUser.salt, password)) {
+        } else if(cryptoPassword.compare(findUser.password, findUser.salt, password, res)) {
             const jwtToken = authJWT.generateToken({email}, process.env.SECRET_ACCESS_TOKEN, "24h");
             let jwtRefresh = undefined;
             //Check to see if refresh token is expired.
@@ -51,7 +53,7 @@ userRouter.post("/signin", isNotAuth, async (req, res) => {
     }
 });
 
-userRouter.post("/signup", isNotAuth, async (req, res) => {
+userRouter.post("/signup", async (req, res) => {
     const {username, email, password} = req.body;
     const hashData = await cryptoPassword.hash(password);
     const hashedPassword = hashData.hashedPassword;
@@ -85,7 +87,22 @@ userRouter.post("/signup", isNotAuth, async (req, res) => {
     }
 });
 
-userRouter.post("/reauth", isNotAuth, (req, res) => {
+userRouter.post("/change-password", userAuth, async (req, res) => {
+    const {password, newPassword, username} = req.body;
+    console.log(password, newPassword, username);
+    const findUser = await User.findOne({username});
+    const hashData = await cryptoPassword.hash(newPassword);
+    const hashedPassword = hashData.hashedPassword;
+    const salt = hashData.salt;
+    if(cryptoPassword.compare(findUser.password, findUser.salt, password, res)){
+        findUser.password = hashedPassword;
+        findUser.salt = salt;
+        findUser.save();
+        res.json({msg: "Password Changed."});
+    }
+});
+
+userRouter.post("/reauth", (req, res) => {
     const refreshToken = req.cookies.userAuthRefresh;
     if(!refreshToken){
         return res.status(401).res.json({message: "Unauthorized."});
@@ -102,7 +119,7 @@ userRouter.post("/reauth", isNotAuth, (req, res) => {
     });
 });
 
-userRouter.get("/locations/:username", isNotAuth, userAuth, async (req, res) => {
+userRouter.get("/locations/:username", userAuth, async (req, res) => {
     try{
         const {username} = req.params;
         const findUser = await User.findOne({username});
@@ -112,7 +129,7 @@ userRouter.get("/locations/:username", isNotAuth, userAuth, async (req, res) => 
         res.status(400).json({message: "Could not retrieve cities."});
     }
 });
-userRouter.post("/locations", isNotAuth, userAuth, async (req, res) => {
+userRouter.post("/locations", userAuth, async (req, res) => {
     try{
         const {username, newCity} = req.body;
         const findUser = await User.findOne({username});
@@ -127,7 +144,7 @@ userRouter.post("/locations", isNotAuth, userAuth, async (req, res) => {
         res.status(400).json({message: "City not added."});
     }
 });
-userRouter.post("/delete/:city", isNotAuth, userAuth, async (req, res) => {
+userRouter.post("/delete/:city", userAuth, async (req, res) => {
     const {city} = req.params;
     const {email} = req.user;
     const {cities} = req.body;
