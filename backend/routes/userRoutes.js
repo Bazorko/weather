@@ -33,7 +33,7 @@ userRouter.post("/signin", async (req, res) => {
         const findUser = await User.findOne({email});
         if(!findUser){
             res.status(403).json({message: "This account does not exist."});
-        } else if(cryptoPassword.compare(findUser.password, findUser.salt, password, res)) {
+        } else if(await cryptoPassword.compare(findUser.password, findUser.salt, password)) {
             const jwtToken = authJWT.generateToken({email}, process.env.SECRET_ACCESS_TOKEN, "24h");
             let jwtRefresh = undefined;
             //Check to see if refresh token is expired.
@@ -47,6 +47,8 @@ userRouter.post("/signin", async (req, res) => {
             res.cookie("userAuthRefresh", jwtRefresh, {httpOnly: true});
             req.isAuth = true;
             res.status(200).json({username: findUser.username, email: findUser.email});
+        }else if(await cryptoPassword.compare(findUser.password, findUser.salt, password) === false){
+            res.status(403).json({message: "Password incorrect."});
         }
     } catch (error) {
         console.log(error);

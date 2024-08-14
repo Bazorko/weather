@@ -28,11 +28,11 @@ const SignIn = (props) => {
             body: JSON.stringify({email, password}),
         })
         const json = await response.json();
-        if(json.message){
+        if(response.status !== 200){
             setMessage(json.message);
             return;
         }
-        else if(!json.message){
+        else if(response.status === 200){
             const username = json.username;
             login({username, email});
             navigate("../../../../user/dashboard");
