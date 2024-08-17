@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../../contexts/UserAuth";
 import { useNavigate } from "react-router-dom";
+import ForgotPassword from "../../utils/ForgotPassword";
 const SignIn = (props) => { 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -49,22 +50,7 @@ const SignIn = (props) => {
         setForgotPasswordModal(status);
     }
     return(<>
-        {forgotPasswordModal ? <> 
-            <section>
-                <p className="text-3xl">Forgot Password?</p>
-            </section>
-            <section className="pt-6 w-full">
-                <form onSubmit={handleFormSubmit} className="flex flex-col w-full gap-2">
-                    <input type="email" name="email" value={email} onChange={handleEmailInput} className="py-1.5 pl-1.5 border-zinc-600 border-2 rounded-lg" placeholder="Enter your email address"/>
-                    <button type="submit" className="py-2 border-2 rounded-lg bg-blue-500 text-slate-50">Forgot Password?</button>
-                </form>
-            </section>
-            <section className="m-6">
-                <p className="cursor-pointer hover:underline" onClick={() => {
-                    handleForgotPassword(false);
-                }}>Remembered Password?</p>
-            </section>
-        </> :
+        {forgotPasswordModal ? <ForgotPassword /> :
         <> 
             <section>
                 <p className="text-3xl">Sign In.</p>
