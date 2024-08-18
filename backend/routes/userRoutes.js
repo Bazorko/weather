@@ -4,6 +4,7 @@ const User = require("../schema/userSchema");
 const jwt = require("jsonwebtoken");
 const cryptoPassword = require("../utilities/cryptoPassword.js");
 const authJWT = require("../utilities/authJWT.js");
+const nodemailer = require("nodemailer");
 const userRouter = express.Router();
 
 mongoose.connect(process.env.MONGO_URL);
@@ -108,6 +109,35 @@ userRouter.post("/forgot-password", async (req, res) => {
    const {email} = req.body;
    const findUser = await User.findOne({email});
    if(findUser){
+        findUser.passwordResetToken = crypto.randomUUID();
+        findUser.save();
+        const passwordResetLink = `http://localhost:3000/user/forgot-password/${findUser.passwordResetToken}`;
+        const transporter = nodemailer.createTransport({
+            host: "smtp.ethereal.email",
+            port: 587,
+            secure: false, // Use `true` for port 465, `false` for all other ports
+            auth: {
+                user: process.env.EMAIL,
+                pass: process.env.EMAIL_PASSWORD,
+            },
+        });
+        const sendEmail = async () => {
+            const info = await transporter.sendMail({
+                from: '"Uco" 👻 <alessia62@ethereal.email>', // sender address
+                to: `${email}`, // list of receivers
+                subject: "Hello ✔", // Subject line
+                text: "Click on the following link to reset your password. This link will last for 5 minutes.", // plain text body
+                html: `
+                    <p>The following link will remain active for 5 minutes. 
+                    Please visit the link to finish resetting your password.</p>
+                    <a href=${passwordResetLink}>Reset Password<a/>
+                `, // html body
+            }, (err, info) => {
+                if(err) console.log(err);
+            });
+            console.log(info.messageId);
+        }
+        sendEmail().catch(console.error);
         res.status(200).json({message: "Check your email."});
    }
    else if(!findUser){
