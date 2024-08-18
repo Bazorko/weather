@@ -50,7 +50,7 @@ const SignIn = (props) => {
         setForgotPasswordModal(status);
     }
     return(<>
-        {forgotPasswordModal ? <ForgotPassword /> :
+        {forgotPasswordModal ? <ForgotPassword handleForgotPassword={handleForgotPassword}/> :
         <> 
             <section>
                 <p className="text-3xl">Sign In.</p>

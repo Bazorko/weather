@@ -104,6 +104,17 @@ userRouter.post("/change-password", userAuth, async (req, res) => {
     }
 });
 
+userRouter.post("/forgot-password", async (req, res) => {
+   const {email} = req.body;
+   const findUser = await User.findOne({email});
+   if(findUser){
+        res.status(200).json({message: "Check your email."});
+   }
+   else if(!findUser){
+        res.status(404).json({error: "User does not exist."});
+   }
+});
+
 userRouter.post("/reauth", (req, res) => {
     const refreshToken = req.cookies.userAuthRefresh;
     if(!refreshToken){
