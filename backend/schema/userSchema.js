@@ -20,8 +20,8 @@ const userSchema = mongoose.Schema({
         required: true
     },
     passwordResetToken: {
-        type: String,
-
+        token: String,
+        expiresAt: String,
     },
     salt: {
         type: String,

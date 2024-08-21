@@ -109,9 +109,10 @@ userRouter.post("/forgot-password", async (req, res) => {
    const {email} = req.body;
    const findUser = await User.findOne({email});
    if(findUser){
-        findUser.passwordResetToken = crypto.randomUUID();
+        findUser.passwordResetToken.token = crypto.randomUUID();
+        findUser.passwordResetToken.expiresAt = Date.now()+5*60*1000;
         findUser.save();
-        const passwordResetLink = `http://localhost:3000/user/forgot-password/${findUser.passwordResetToken}`;
+        const passwordResetLink = `http://localhost:5173/user/forgot-password/${findUser.passwordResetToken.token}`;
         const transporter = nodemailer.createTransport({
             host: "smtp.ethereal.email",
             port: 587,
@@ -135,7 +136,6 @@ userRouter.post("/forgot-password", async (req, res) => {
             }, (err, info) => {
                 if(err) console.log(err);
             });
-            console.log(info.messageId);
         }
         sendEmail().catch(console.error);
         res.status(200).json({message: "Check your email."});
@@ -144,6 +144,28 @@ userRouter.post("/forgot-password", async (req, res) => {
         res.status(404).json({error: "User does not exist."});
    }
 });
+
+userRouter.post("/forgot-password/:token", async (req, res) => {
+    const {token} = req.params;
+    const {password} = req.body;
+    console.log(password);
+    const findUser = await User.findOne({"passwordResetToken.token":`${token}`});
+    const expiresAt = findUser.passwordResetToken.expiresAt;
+    const timeNow = Date.now();
+    if(timeNow > expiresAt){
+        res.status(401).json({message: "Token expired."});
+    }
+    else if(timeNow < expiresAt){
+        console.log(password);
+        const hashData = await cryptoPassword.hash(password);
+        const hashedPassword = hashData.hashedPassword;
+        const salt = hashData.salt;
+        findUser.password = hashedPassword;
+        findUser.salt = salt;
+        findUser.save();
+        res.status(200).json({message: "Password successfully changed."});
+    }
+ });
 
 userRouter.post("/reauth", (req, res) => {
     const refreshToken = req.cookies.userAuthRefresh;
